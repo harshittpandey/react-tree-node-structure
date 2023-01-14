@@ -30,8 +30,10 @@ export const SEARCH_NESTED_CHILDRENS = (nodes = [], searchText = "") => {
 }
 
 export const REVIEW_IMMEDIATE_CHECKBOX = (nodes = {}) => {
-  const allChecked = (nodes.children || []).every(childNode => childNode.enabled == true)
-  const allUnChecked = (nodes.children || []).every(childNode => childNode.enabled == false)
+  if (!Array.isArray(nodes.children) || nodes.children.length == 0) return false
+
+  const allChecked = nodes.children.every(childNode => childNode.enabled == true)
+  const allUnChecked = nodes.children.every(childNode => childNode.enabled == false)
   if (allChecked) return true
   else if (allUnChecked) return false
   else return -1
