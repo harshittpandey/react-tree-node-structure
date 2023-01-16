@@ -2,7 +2,7 @@ export const TOGGLE_NESTED_CHILDRENS = (nodes, checked = true) => {
   if (!nodes && nodes.length === 0) return
 
   return nodes.map(node => {
-    node.enabled = checked
+    node.enabled = node.visible ? checked : false
     if (node.children?.length > 0) {
       node.children = TOGGLE_NESTED_CHILDRENS(node.children, checked)
     }
@@ -13,21 +13,19 @@ export const TOGGLE_NESTED_CHILDRENS = (nodes, checked = true) => {
 const SEARCH_X_IN_Y = (X, Y) => Y.toLowerCase().includes(X.toLowerCase())
 
 export const SEARCH_NESTED_CHILDRENS = (nodes = [], searchText = "") => {
-  if (nodes.length === 0 || searchText === "") return []
-
-  return nodes.reduce((filteredNodes, node) => {
-    if (SEARCH_X_IN_Y(searchText, node.label)) {
-      filteredNodes.push(node)
-    } else if (node.children) {
-      // TODO: make this recursive
-      const children = node.children.filter(cNode => SEARCH_X_IN_Y(searchText, cNode.label)) 
-      if (children.length > 0) {
-        filteredNodes.push({...node, children})
-      }
+  return nodes.map((node) => {
+    if ((node?.children || []).length > 0) {
+      node.children = SEARCH_NESTED_CHILDRENS(node.children, searchText);
     }
-    return filteredNodes
-  }, [])
-}
+    if (
+      (node?.children || []).some((cNode) => cNode.visible) ||
+      SEARCH_X_IN_Y(searchText, node.label)
+    ) {
+      node.visible = true;
+    } else node.visible = false;
+    return node;
+  });
+};
 
 export const REVIEW_IMMEDIATE_CHECKBOX = (nodes = {}) => {
   if (!Array.isArray(nodes.children) || nodes.children.length == 0) return false

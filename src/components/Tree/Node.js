@@ -12,7 +12,7 @@ function Node ({ visible, node, nodeIdx, changeNodeCheckbox, scrollUp, scrollDow
     changeNodeCheckbox?.(nodeIdx, node, enabled)
   }
 
-  return (
+  return node.visible && (
     <div className="p-1 flex space-x-3 items-center">
       <Checkbox indeterminate={visible === -1} enable={isVisible} onChange={handleCheckboxChange} />
       <span className="cursor-pointer" onClick={() => handleCheckboxChange(!isVisible)}>{node.label}</span>

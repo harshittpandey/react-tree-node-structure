@@ -4,7 +4,7 @@ import {COLLAPSE_ICON_UI} from "../../lib-ui/Collapse/Collapse"
 import {TOGGLE_NESTED_CHILDRENS, SEARCH_NESTED_CHILDRENS, REVIEW_IMMEDIATE_CHECKBOX} from "../shared/utils"
 import { useCallback, useEffect, useState } from "react";
 
-export default function Root ({nodes}) {
+export default function Root ({nodes, onChangeSelectedNodes}) {
   // parentNode handlers
   const [parentNodes, setParentNodes] = useState(nodes)
 
@@ -12,7 +12,7 @@ export default function Root ({nodes}) {
   const [rootChecked, setRootChecked] = useState(false)
   const handleRootCheckbox = (enabled) => {
     setRootChecked(enabled)
-    setParentNodes(TOGGLE_NESTED_CHILDRENS(nodes, enabled))
+    setParentNodes(TOGGLE_NESTED_CHILDRENS(parentNodes, enabled))
   }
 
   // collapse handlers
@@ -21,16 +21,17 @@ export default function Root ({nodes}) {
 
   // search handlers
   const [searchText, setSearchText] = useState("")
-  const handleSearchNodes = (e) => setSearchText(e?.target?.value || "")
+  const handleSearchNodes = (e) => setSearchText(e?.target?.value || "") // can add debouce
   useEffect(() => {
     setParentNodes(
-      searchText === "" ? nodes : SEARCH_NESTED_CHILDRENS(nodes, searchText)
+      SEARCH_NESTED_CHILDRENS(parentNodes, searchText)
     )
   }, [searchText])
   
   // parentNode handlers
   useEffect(() => {
     setRootChecked(REVIEW_IMMEDIATE_CHECKBOX({children: parentNodes}))
+    onChangeSelectedNodes(parentNodes)
   }, [parentNodes])
   
   const handleParentUpdate = useCallback((updatedParentNode, idx) => {
@@ -54,6 +55,7 @@ export default function Root ({nodes}) {
             key={parentNode.id}
             parentIdx={idx}
             node={parentNode}
+            childNodes={parentNode.children}
             rootExpanded={rootExanded}
             onChangeParentNode={handleParentUpdate}
           />

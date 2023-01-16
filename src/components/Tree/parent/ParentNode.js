@@ -48,7 +48,7 @@ function ParentNode ({ parentIdx, node, rootExpanded, onChangeParentNode }) {
 
   const hasChildNodes = () => node.children.length > 0
 
-  return (
+  return node.visible && (
     <div key={node.id}>
       <Collapse header={<ParentHeader node={node} handleParentCheckbox={handleParentCheckbox} />} visible={parentExpanded}>
         <div className="ml-5">
